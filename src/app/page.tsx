@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { createPoll } from "./actions";
+import { suggestOptions } from "@/ai/flows/suggest-options-flow";
 import { Spinner } from "@/components/ui/spinner";
 
 const formSchema = z.object({
@@ -38,6 +40,7 @@ export default function Home() {
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuggesting, setIsSuggesting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,6 +49,38 @@ export default function Home() {
       options: "",
     },
   });
+
+  async function handleSuggestOptions() {
+    const question = form.getValues("question");
+    if (!question || question.length < 5) {
+      toast({
+        variant: "destructive",
+        title: "Please enter a valid question first.",
+        description: "Your question must be at least 5 characters long.",
+      });
+      return;
+    }
+    
+    setIsSuggesting(true);
+    try {
+      const result = await suggestOptions({ question });
+      if (result.options) {
+        form.setValue("options", result.options, { shouldValidate: true });
+        toast({
+          title: "Suggestions added!",
+          description: "AI-powered options have been filled in for you.",
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "AI Suggestion Failed",
+        description: "Could not generate suggestions at this time.",
+      });
+    } finally {
+      setIsSuggesting(false);
+    }
+  }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
@@ -100,7 +135,23 @@ export default function Home() {
                   name="options"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-lg">Options</FormLabel>
+                      <div className="flex items-center justify-between">
+                        <FormLabel className="text-lg">Options</FormLabel>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={handleSuggestOptions}
+                          disabled={isSubmitting || isSuggesting}
+                        >
+                          {isSuggesting ? (
+                            <Spinner className="h-4 w-4" />
+                          ) : (
+                            <Sparkles className="h-4 w-4 text-accent" />
+                          )}
+                          <span className="ml-2">Suggest with AI</span>
+                        </Button>
+                      </div>
                       <FormControl>
                         <Textarea
                           placeholder="Pizza\nBurgers\nSalad"
