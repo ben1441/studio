@@ -14,10 +14,11 @@ This project requires Firebase credentials to connect to the database.
     ```
 2.  Open the newly created `.env.local` file.
 3.  Follow the instructions in the file to add your Firebase project's public configuration and private service account key.
+4.  **Important:** After saving your changes to `.env.local`, you must **restart the development server** for the new environment variables to be loaded.
 
 ### 2. Create a Firestore Database
 
-This application uses Firestore to store poll data.
+This application uses Firestore to store poll data. If you haven't already, you need to create a database in your Firebase project.
 
 1. Go to the [Firebase Console](https://console.firebase.google.com/).
 2. Select your project.

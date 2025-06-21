@@ -69,7 +69,7 @@ export default function PollPage() {
       setLoading(false);
     }, (err) => {
       console.error("Error fetching poll:", err);
-      setError("Failed to load poll data.");
+      setError("Failed to load poll data. This is likely due to missing or incorrect client-side Firebase configuration. Please ensure .env.local is correctly set up with your project's web app credentials and that you've restarted the server.");
       setLoading(false);
     });
 
