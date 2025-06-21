@@ -42,7 +42,7 @@ export async function createPoll(values: z.infer<typeof createPollSchema>) {
         return { success: false, error: "Firebase Admin SDK not initialized. Please check your service account credentials in .env.local and restart the server." };
       }
       if (error.message.includes('NOT_FOUND')) {
-        return { success: false, error: "Database not found. Please make sure you have created a Firestore database in your Firebase project and that your service account has the correct permissions." };
+        return { success: false, error: "Database not found. This could be because 1) a Firestore database hasn't been created in your project, 2) your credentials in .env.local are for the wrong project, or 3) you haven't restarted the server after setting the credentials. Please double-check these." };
       }
       return { success: false, error: `Database error: ${error.message}` };
     }
@@ -106,7 +106,7 @@ export async function castVote(values: z.infer<typeof castVoteSchema>) {
             return { success: false, error: "Firebase Admin SDK not initialized. Please check your service account credentials and restart the server." };
         }
         if (error.message.includes('NOT_FOUND')) {
-            return { success: false, error: "Database not found. Please make sure you have created a Firestore database in your Firebase project and that your service account has the correct permissions." };
+            return { success: false, error: "Database not found. This could be because 1) a Firestore database hasn't been created in your project, 2) your credentials in .env.local are for the wrong project, or 3) you haven't restarted the server after setting the credentials. Please double-check these." };
         }
         if (error.message.includes("Poll does not exist.") || error.message.includes("Invalid option for this poll.")) {
           return { success: false, error: error.message };
