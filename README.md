@@ -1,3 +1,4 @@
+
 # Firebase Studio
 
 This is a NextJS starter in Firebase Studio.
@@ -28,9 +29,30 @@ This application uses Firestore to store poll data. If you haven't already, you 
 6. Select a Firestore location. **This cannot be changed later.** Choose a location close to your users.
 7. Click "Enable".
 
-### 3. Run the Development Server
+### 3. Deploy Firestore Security Rules
 
-Once your credentials are in place and you've created a database, you can start the development server:
+To allow your app to read poll data, you need to deploy security rules.
+
+1.  **Install the Firebase CLI:** If you don't have it, install it globally:
+    ```bash
+    npm install -g firebase-tools
+    ```
+2.  **Login to Firebase:**
+    ```bash
+    firebase login
+    ```
+3.  **Select your project:** Tell the CLI which Firebase project to use. Replace `[YOUR_PROJECT_ID]` with your actual Firebase Project ID.
+    ```bash
+    firebase use [YOUR_PROJECT_ID]
+    ```
+4.  **Deploy the rules:**
+    ```bash
+    firebase deploy --only firestore:rules
+    ```
+
+### 4. Run the Development Server
+
+Once your credentials and security rules are in place, you can start the development server:
 
 ```bash
 npm run dev
