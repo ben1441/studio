@@ -37,7 +37,10 @@ export async function createPoll(values: z.infer<typeof createPollSchema>) {
     return { success: true, pollId: pollRef.id };
   } catch (error) {
     console.error("Error creating poll:", error);
-    return { success: false, error: "Could not create poll in the database." };
+    if (error instanceof Error && error.message.includes('The default Firebase app does not exist')) {
+        return { success: false, error: "Firebase Admin SDK not initialized. Please check your service account credentials in .env.local and restart the server." };
+    }
+    return { success: false, error: "Could not create poll in the database. Check server logs for details." };
   }
 }
 
@@ -93,6 +96,9 @@ export async function castVote(values: z.infer<typeof castVoteSchema>) {
   } catch (error) {
     console.error("Error casting vote:", error);
     if (error instanceof Error) {
+        if (error.message.includes('The default Firebase app does not exist')) {
+            return { success: false, message: "Firebase Admin SDK not initialized. Please check your service account credentials and restart the server." };
+        }
         return { success: false, message: error.message };
     }
     return { success: false, message: "An unexpected error occurred." };
