@@ -41,6 +41,9 @@ export async function createPoll(values: z.infer<typeof createPollSchema>) {
       if (error.message.includes('The default Firebase app does not exist')) {
         return { success: false, error: "Firebase Admin SDK not initialized. Please check your service account credentials in .env.local and restart the server." };
       }
+      if (error.message.includes('NOT_FOUND')) {
+        return { success: false, error: "Database not found. Please make sure you have created a Firestore database in your Firebase project and that your service account has the correct permissions." };
+      }
       return { success: false, error: `Database error: ${error.message}` };
     }
     return { success: false, error: "Could not create poll in the database. An unknown error occurred." };
@@ -101,6 +104,9 @@ export async function castVote(values: z.infer<typeof castVoteSchema>) {
     if (error instanceof Error) {
         if (error.message.includes('The default Firebase app does not exist')) {
             return { success: false, message: "Firebase Admin SDK not initialized. Please check your service account credentials and restart the server." };
+        }
+        if (error.message.includes('NOT_FOUND')) {
+            return { success: false, message: "Database not found. Please make sure you have created a Firestore database in your Firebase project." };
         }
         return { success: false, message: `Database error: ${error.message}` };
     }
