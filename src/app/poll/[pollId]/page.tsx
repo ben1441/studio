@@ -79,7 +79,7 @@ export default function PollPage() {
       if (voteResult.success) {
         toast({
           title: "Success!",
-          description: voteResult.message,
+          description: "Your vote has been cast!",
         });
         setVotedOption(option);
         localStorage.setItem(`voted_poll_${pollId}`, option);
@@ -87,10 +87,10 @@ export default function PollPage() {
         toast({
           variant: "destructive",
           title: "Vote Failed",
-          description: voteResult.message,
+          description: voteResult.error,
         });
         // If server says we already voted, update local state
-        if (voteResult.message.includes("already voted")) {
+        if (voteResult.error?.includes("already voted")) {
           setVotedOption(option); // We don't know which option, but we can lock voting. Let's assume current option for UI feedback
           localStorage.setItem(`voted_poll_${pollId}`, 'true'); // Generic flag
         }

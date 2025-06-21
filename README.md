@@ -15,9 +15,21 @@ This project requires Firebase credentials to connect to the database.
 2.  Open the newly created `.env.local` file.
 3.  Follow the instructions in the file to add your Firebase project's public configuration and private service account key.
 
-### 2. Run the Development Server
+### 2. Create a Firestore Database
 
-Once your credentials are in place, you can start the development server:
+This application uses Firestore to store poll data.
+
+1. Go to the [Firebase Console](https://console.firebase.google.com/).
+2. Select your project.
+3. In the left-hand navigation under the "Build" section, click on "Firestore Database".
+4. Click "Create database".
+5. Choose to start in **production mode** and click "Next".
+6. Select a Firestore location. **This cannot be changed later.** Choose a location close to your users.
+7. Click "Enable".
+
+### 3. Run the Development Server
+
+Once your credentials are in place and you've created a database, you can start the development server:
 
 ```bash
 npm run dev

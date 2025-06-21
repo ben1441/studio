@@ -60,7 +60,7 @@ export async function castVote(values: z.infer<typeof castVoteSchema>) {
   const validatedFields = castVoteSchema.safeParse(values);
 
   if (!validatedFields.success) {
-    return { success: false, message: "Invalid input." };
+    return { success: false, error: "Invalid input." };
   }
 
   const { pollId, option, visitorId } = validatedFields.data;
@@ -82,7 +82,7 @@ export async function castVote(values: z.infer<typeof castVoteSchema>) {
       
       const voterDoc = await transaction.get(voterRef);
       if (voterDoc.exists) {
-        return { success: false, message: "You have already voted on this poll." };
+        return { success: false, error: "You have already voted on this poll." };
       }
 
       transaction.update(pollRef, {
@@ -94,7 +94,7 @@ export async function castVote(values: z.infer<typeof castVoteSchema>) {
         option: option,
       });
 
-      return { success: true, message: "Your vote has been cast!" };
+      return { success: true };
     });
 
     return result;
@@ -103,13 +103,16 @@ export async function castVote(values: z.infer<typeof castVoteSchema>) {
     console.error("Error casting vote:", error);
     if (error instanceof Error) {
         if (error.message.includes('The default Firebase app does not exist')) {
-            return { success: false, message: "Firebase Admin SDK not initialized. Please check your service account credentials and restart the server." };
+            return { success: false, error: "Firebase Admin SDK not initialized. Please check your service account credentials and restart the server." };
         }
         if (error.message.includes('NOT_FOUND')) {
-            return { success: false, message: "Database not found. Please make sure you have created a Firestore database in your Firebase project." };
+            return { success: false, error: "Database not found. Please make sure you have created a Firestore database in your Firebase project and that your service account has the correct permissions." };
         }
-        return { success: false, message: `Database error: ${error.message}` };
+        if (error.message.includes("Poll does not exist.") || error.message.includes("Invalid option for this poll.")) {
+          return { success: false, error: error.message };
+        }
+        return { success: false, error: `Database error: ${error.message}` };
     }
-    return { success: false, message: "An unexpected error occurred." };
+    return { success: false, error: "An unexpected error occurred." };
   }
 }
